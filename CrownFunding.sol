@@ -29,6 +29,10 @@ contract CrownFunding{
         minimumContribution = 100 wei;
         admin = msg.sender;
     }
+    
+    event ContributeEvent(address _sender, uint _value);
+    event CreateRequstEvent(string _description, address _recipient, uint _value);
+    event MakePaymentEvent(address _recipient, uint _value);
 
 
     function contribute() public payable{
@@ -41,6 +45,8 @@ contract CrownFunding{
         
         contributors[msg.sender] += msg.value;
         raisedAmount += msg.value;
+        
+        emit ContributeEvent(msg.sender, msg.value);
     }
     
     receive() payable external{
@@ -76,6 +82,8 @@ contract CrownFunding{
         newRequest.value = _value;
         newRequest.completed = false;
         newRequest.noOfVoters = 0;
+        
+        emit CreateRequstEvent(_description, _recipient, _value);
     }
     
     function voteRequest(uint _requestNo) public{
@@ -95,5 +103,7 @@ contract CrownFunding{
         
         thisRequest.recipient.transfer(thisRequest.value);
         thisRequest.completed = true;
+        
+        emit MakePaymentEvent(thisRequest.recipient, thisRequest.value);
     }
 }
